@@ -152,7 +152,7 @@ suspend fun AskGeminAI(question: String): String {
     return try {
         val generativeModel = GenerativeModel(
             modelName = "gemini-1.5-flash",
-            apiKey = "AIzaSyBdOSl_t87dZeWPqCeb-EvHu1dPPtmgweE"
+            apiKey = BuildConfig.API_KEY
         )
         val response = generativeModel.generateContent(question)
         response.text.toString()
