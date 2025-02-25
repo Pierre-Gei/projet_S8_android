@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Clear
@@ -41,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -52,7 +55,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.ai.client.generativeai.GenerativeModel
 import fr.isen.geiguer.isensmartcompanion.ui.theme.ISENSmartCompanionTheme
+import kotlinx.coroutines.launch
+import kotlinx.serialization.SerializationException
 import retrofit2.Call
 import retrofit2.Callback
 
@@ -76,6 +82,7 @@ fun MainPage(contentPadding: PaddingValues, navController: NavController) {
     val textFieldValue = remember { mutableStateOf("") }
     val inputHistory = remember { mutableStateOf(listOf<String>()) }
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier
@@ -98,10 +105,19 @@ fun MainPage(contentPadding: PaddingValues, navController: NavController) {
             Text(
                 text = "ISEN Smart Companion",
             )
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Column {
             inputHistory.value.forEach { input ->
                 Text(text = input, modifier = Modifier.padding(top = 16.dp))
             }
-            Spacer(modifier = Modifier.weight(1f))
+                }
+            }
             TextField(
                 modifier = Modifier.padding(bottom = 32.dp),
                 value = textFieldValue.value,
@@ -112,8 +128,13 @@ fun MainPage(contentPadding: PaddingValues, navController: NavController) {
                         onClick = {
                             Log.i(TAG, "TextField content: ${textFieldValue.value}")
                             makeText(context, "Question Submitted", Toast.LENGTH_SHORT).show()
-                            inputHistory.value += textFieldValue.value
-                            textFieldValue.value = ""
+                            inputHistory.value += ("You : " + textFieldValue.value)
+                            coroutineScope.launch {
+                                val response = AskGeminAI(textFieldValue.value)
+                                Log.i(TAG, "GeminAI response: $response")
+                                inputHistory.value += ("GeminAI : $response")
+                                textFieldValue.value = ""
+                            }
                         }
                     ) {
                         Icon(
@@ -124,6 +145,23 @@ fun MainPage(contentPadding: PaddingValues, navController: NavController) {
                 }
             )
         }
+    }
+}
+
+suspend fun AskGeminAI(question: String): String {
+    return try {
+        val generativeModel = GenerativeModel(
+            modelName = "gemini-1.5-flash",
+            apiKey = "AIzaSyBdOSl_t87dZeWPqCeb-EvHu1dPPtmgweE"
+        )
+        val response = generativeModel.generateContent(question)
+        response.text.toString()
+    } catch (e: SerializationException) {
+        Log.e(TAG, "Serialization error: ${e.message}", e)
+        "Error: Unable to process the response from the server."
+    } catch (e: Exception) {
+        Log.e(TAG, "Unexpected error: ${e.message}", e)
+        "Error: An unexpected error occurred."
     }
 }
 
