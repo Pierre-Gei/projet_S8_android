@@ -1,8 +1,6 @@
 package fr.isen.geiguer.isensmartcompanion
 
 import android.annotation.SuppressLint
-import retrofit2.Call
-import retrofit2.Callback
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
@@ -26,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material.icons.rounded.Home
@@ -54,6 +53,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import fr.isen.geiguer.isensmartcompanion.ui.theme.ISENSmartCompanionTheme
+import retrofit2.Call
+import retrofit2.Callback
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -73,7 +74,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainPage(contentPadding: PaddingValues, navController: NavController) {
     val textFieldValue = remember { mutableStateOf("") }
-    val responseText = remember { mutableStateOf("Response:") }
+    val inputHistory = remember { mutableStateOf(listOf<String>()) }
     val context = LocalContext.current
 
     Box(
@@ -97,10 +98,9 @@ fun MainPage(contentPadding: PaddingValues, navController: NavController) {
             Text(
                 text = "ISEN Smart Companion",
             )
-            Text(
-                text = responseText.value,
-                modifier = Modifier.padding(top = 16.dp)
-            )
+            inputHistory.value.forEach { input ->
+                Text(text = input, modifier = Modifier.padding(top = 16.dp))
+            }
             Spacer(modifier = Modifier.weight(1f))
             TextField(
                 modifier = Modifier.padding(bottom = 32.dp),
@@ -112,12 +112,12 @@ fun MainPage(contentPadding: PaddingValues, navController: NavController) {
                         onClick = {
                             Log.i(TAG, "TextField content: ${textFieldValue.value}")
                             makeText(context, "Question Submitted", Toast.LENGTH_SHORT).show()
-                            responseText.value = "Response: ${textFieldValue.value}"
+                            inputHistory.value += textFieldValue.value
                             textFieldValue.value = ""
                         }
                     ) {
                         Icon(
-                            Icons.Rounded.Menu,
+                            Icons.AutoMirrored.Rounded.ArrowForward,
                             contentDescription = "Next",
                         )
                     }
@@ -185,7 +185,10 @@ fun EventsScreen() {
     LaunchedEffect(Unit) {
         val call = RetrofitInstance.api.getEvents()
         call.enqueue(object : Callback<List<EventModel>> {
-            override fun onResponse(call: Call<List<EventModel>>, response: retrofit2.Response<List<EventModel>>) {
+            override fun onResponse(
+                call: Call<List<EventModel>>,
+                response: retrofit2.Response<List<EventModel>>
+            ) {
                 if (response.isSuccessful) {
                     events.value = response.body() ?: emptyList()
                 } else {
@@ -193,7 +196,7 @@ fun EventsScreen() {
                 }
             }
 
-            override fun onFailure(call: retrofit2.Call<List<EventModel>>, t: Throwable) {
+            override fun onFailure(call: Call<List<EventModel>>, t: Throwable) {
                 Log.e(TAG, "Failed to fetch events", t)
             }
         })
