@@ -6,7 +6,6 @@ import android.content.Context
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import fr.isen.geiguer.isensmartcompanion.R
 import fr.isen.geiguer.isensmartcompanion.models.EventModel
@@ -23,12 +22,10 @@ class NotificationsService {
             val notificationManager: NotificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
-            Log.d("NotificationsService", "Notification channel created: $name")
         }
     }
 
     fun scheduleNotification(context: Context, event: EventModel) {
-        Log.d("NotificationsService", "Scheduling notification for event: ${event.title}")
         val notificationBuilder = NotificationCompat.Builder(context, "event_notification")
             .setSmallIcon(R.drawable.la_mere_patriev3)
             .setContentTitle(event.title)
@@ -40,7 +37,6 @@ class NotificationsService {
         val handler = Handler(Looper.getMainLooper())
         handler.postDelayed({
             notificationManager.notify(event.hashCode(), notificationBuilder.build())
-            Log.d("NotificationsService", "Notification posted for event: ${event.title}")
         }, 10000)
     }
 }
