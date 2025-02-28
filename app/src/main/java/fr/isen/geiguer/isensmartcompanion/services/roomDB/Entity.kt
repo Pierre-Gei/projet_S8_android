@@ -1,4 +1,4 @@
-package fr.isen.geiguer.isensmartcompanion
+package fr.isen.geiguer.isensmartcompanion.services.roomDB
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

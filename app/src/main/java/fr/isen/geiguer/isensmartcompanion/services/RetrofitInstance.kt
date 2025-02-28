@@ -1,5 +1,6 @@
-package fr.isen.geiguer.isensmartcompanion
+package fr.isen.geiguer.isensmartcompanion.services
 
+import fr.isen.geiguer.isensmartcompanion.services.roomDB.EventApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

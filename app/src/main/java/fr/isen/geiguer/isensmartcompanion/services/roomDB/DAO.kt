@@ -1,4 +1,4 @@
-package fr.isen.geiguer.isensmartcompanion
+package fr.isen.geiguer.isensmartcompanion.services.roomDB
 
 import androidx.room.Dao
 import androidx.room.Delete

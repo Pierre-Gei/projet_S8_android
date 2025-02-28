@@ -1,9 +1,9 @@
-package fr.isen.geiguer.isensmartcompanion
+package fr.isen.geiguer.isensmartcompanion.services.roomDB
 
 import androidx.room.TypeConverter
 import java.util.Date
 
-class DateConverter {
+class DateConverters {
     @TypeConverter
     fun fromTimestamp(value: Long?): Date? {
         return value?.let { Date(it) }

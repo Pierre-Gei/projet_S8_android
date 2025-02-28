@@ -1,4 +1,4 @@
-package fr.isen.geiguer.isensmartcompanion
+package fr.isen.geiguer.isensmartcompanion.models
 
 import java.io.Serializable
 
