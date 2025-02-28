@@ -7,5 +7,5 @@ data class EventModel(
     val description: String,
     val date: String,
     val location: String,
-    val category: String
+    val category: String,
 ) : Serializable

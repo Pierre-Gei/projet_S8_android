@@ -1,12 +1,12 @@
 package fr.isen.geiguer.isensmartcompanion.activities
 
+import EventDetailView
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import fr.isen.geiguer.isensmartcompanion.models.EventModel
 import fr.isen.geiguer.isensmartcompanion.ui.theme.ISENSmartCompanionTheme
-import fr.isen.geiguer.isensmartcompanion.views.EventDetailView
 
 
 class EventDetailActivity : ComponentActivity() {

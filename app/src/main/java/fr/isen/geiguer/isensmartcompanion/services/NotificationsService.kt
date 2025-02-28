@@ -1,73 +1,46 @@
 package fr.isen.geiguer.isensmartcompanion.services
 
-import android.Manifest
-import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
-import android.os.SystemClock
-import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import fr.isen.geiguer.isensmartcompanion.models.EventModel
 import fr.isen.geiguer.isensmartcompanion.R
+import fr.isen.geiguer.isensmartcompanion.models.EventModel
 
 class NotificationsService {
-    fun scheduleNotification(context: Context, event: EventModel) {
-        val intent = Intent(context, NotificationReceiver::class.java).apply {
-            putExtra("event_title", event.title)
-            putExtra("event_description", event.description)
-        }
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            event.title.hashCode(),
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.set(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            SystemClock.elapsedRealtime() + 10000,
-            pendingIntent
-        )
-    }
-
-    class NotificationReceiver : BroadcastReceiver() {
-        @RequiresApi(Build.VERSION_CODES.O)
-        override fun onReceive(context: Context, intent: Intent) {
-            val title = intent.getStringExtra("event_title")
-            val description = intent.getStringExtra("event_description")
-
-            val channelId = "event_notifications"
-            val channelName = "Event Notifications"
+    fun createNotificationChannel(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Event Notifications"
+            val descriptionText = "Notifications for events"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val notificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val channel = NotificationChannel(channelId, channelName, importance)
-            notificationManager.createNotificationChannel(channel)
-
-            val notification = NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.la_mere_patriev3)
-                .setContentTitle(title)
-                .setContentText(description)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .build()
-
-            if (ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return
+            val channel = NotificationChannel("event_notification", name, importance).apply {
+                description = descriptionText
             }
-            NotificationManagerCompat.from(context).notify(title.hashCode(), notification)
+            val notificationManager: NotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+            Log.d("NotificationsService", "Notification channel created: $name")
         }
     }
 
+    fun scheduleNotification(context: Context, event: EventModel) {
+        Log.d("NotificationsService", "Scheduling notification for event: ${event.title}")
+        val notificationBuilder = NotificationCompat.Builder(context, "event_notification")
+            .setSmallIcon(R.drawable.la_mere_patriev3)
+            .setContentTitle(event.title)
+            .setContentText(event.description)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        val handler = Handler(Looper.getMainLooper())
+        handler.postDelayed({
+            notificationManager.notify(event.hashCode(), notificationBuilder.build())
+            Log.d("NotificationsService", "Notification posted for event: ${event.title}")
+        }, 10000)
+    }
 }

@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import fr.isen.geiguer.isensmartcompanion.services.NotificationsService
 import fr.isen.geiguer.isensmartcompanion.services.roomDB.AppDatabase
 import fr.isen.geiguer.isensmartcompanion.services.roomDB.Interaction
 import fr.isen.geiguer.isensmartcompanion.services.roomDB.InteractionDao
@@ -37,6 +38,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             ISENSmartCompanionTheme {
+                NotificationsService().createNotificationChannel(this)
                 enableEdgeToEdge()
                 Scaffold(
                     modifier = Modifier
@@ -71,6 +73,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    //TODO: Move this to a Service
     fun saveInteraction(question: String, answer: String) {
         val interaction = Interaction(question = question, answer = answer, date = Date())
         lifecycleScope.launch {
