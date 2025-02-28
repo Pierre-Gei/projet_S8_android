@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import fr.isen.geiguer.isensmartcompanion.MainActivity
 import fr.isen.geiguer.isensmartcompanion.R
+import fr.isen.geiguer.isensmartcompanion.services.DatabaseService
 import fr.isen.geiguer.isensmartcompanion.services.GeminiAPIService
 import kotlinx.coroutines.launch
 
@@ -84,7 +85,7 @@ class MainPageView {
                                 coroutineScope.launch {
                                     val response = GeminiAPIService().AskGeminAI(textFieldValue.value)
                                     inputHistory.value += ("GeminAI : " + response)
-                                    (context as MainActivity).saveInteraction(
+                                    DatabaseService(context, coroutineScope).saveInteraction(
                                         question = textFieldValue.value,
                                         answer = response
                                     )

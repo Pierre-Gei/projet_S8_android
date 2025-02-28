@@ -15,26 +15,20 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import fr.isen.geiguer.isensmartcompanion.services.DatabaseService
 import fr.isen.geiguer.isensmartcompanion.services.NotificationsService
-import fr.isen.geiguer.isensmartcompanion.services.roomDB.AppDatabase
-import fr.isen.geiguer.isensmartcompanion.services.roomDB.Interaction
-import fr.isen.geiguer.isensmartcompanion.services.roomDB.InteractionDao
 import fr.isen.geiguer.isensmartcompanion.ui.theme.ISENSmartCompanionTheme
 import fr.isen.geiguer.isensmartcompanion.views.EventView
 import fr.isen.geiguer.isensmartcompanion.views.HistoryView
 import fr.isen.geiguer.isensmartcompanion.views.MainPageView
 import fr.isen.geiguer.isensmartcompanion.widgets.NavigationMenuBar
-import kotlinx.coroutines.launch
-import java.util.Date
 
 class MainActivity : ComponentActivity() {
-    private lateinit var db: AppDatabase
-    private lateinit var interactionDao: InteractionDao
+    private lateinit var databaseService: DatabaseService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        db = AppDatabase.getDatabase(this)
-        interactionDao = db.interactionDao()
+        databaseService = DatabaseService(this, lifecycleScope)
         setContent {
             val navController = rememberNavController()
             ISENSmartCompanionTheme {
@@ -70,14 +64,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-        }
-    }
-
-    //TODO: Move this to a Service
-    fun saveInteraction(question: String, answer: String) {
-        val interaction = Interaction(question = question, answer = answer, date = Date())
-        lifecycleScope.launch {
-            interactionDao.insert(interaction)
         }
     }
 }
