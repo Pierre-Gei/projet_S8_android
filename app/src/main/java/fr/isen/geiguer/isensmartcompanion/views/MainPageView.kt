@@ -14,10 +14,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,13 +31,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import fr.isen.geiguer.isensmartcompanion.MainActivity
 import fr.isen.geiguer.isensmartcompanion.R
 import fr.isen.geiguer.isensmartcompanion.services.DatabaseService
 import fr.isen.geiguer.isensmartcompanion.services.GeminiAPIService
 import kotlinx.coroutines.launch
 
 class MainPageView {
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun MainPage(modifier: Modifier, navController: NavController) {
         val textFieldValue = remember { mutableStateOf("") }
@@ -42,13 +45,20 @@ class MainPageView {
         val context = LocalContext.current
         val coroutineScope = rememberCoroutineScope()
 
-        Box(
+        Scaffold(
             modifier = modifier
-                .fillMaxSize()
-        ) {
+                .fillMaxSize(),
+            topBar = {
+                TopAppBar(
+                    title = { Text("Home") },
+                )
+            },
+            content = { innerPadding ->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.la_mere_patriev3), // Ensure this is a PNG, JPG, or WEBP file
@@ -83,7 +93,8 @@ class MainPageView {
                                 makeText(context, "Question Submitted", Toast.LENGTH_SHORT).show()
                                 inputHistory.value += ("You : " + textFieldValue.value)
                                 coroutineScope.launch {
-                                    val response = GeminiAPIService().AskGeminAI(textFieldValue.value)
+                                    val response =
+                                        GeminiAPIService().AskGeminAI(textFieldValue.value)
                                     inputHistory.value += ("GeminAI : " + response)
                                     DatabaseService(context, coroutineScope).saveInteraction(
                                         question = textFieldValue.value,
@@ -102,5 +113,6 @@ class MainPageView {
                 )
             }
         }
+        )
     }
 }

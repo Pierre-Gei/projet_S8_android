@@ -43,7 +43,9 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController, startDestination = "main") {
                         composable("main") {
                             MainPageView().MainPage(
-                                Modifier.padding(innerPadding),
+                                Modifier.padding(
+                                    innerPadding
+                                ),
                                 navController
                             )
                         }
