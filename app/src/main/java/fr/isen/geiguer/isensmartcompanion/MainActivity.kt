@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -50,6 +49,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -61,11 +61,18 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
 import retrofit2.Call
 import retrofit2.Callback
+import java.util.Date
 
 class MainActivity : ComponentActivity() {
+    private lateinit var db: AppDatabase
+    private lateinit var interactionDao: InteractionDao
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        db = AppDatabase.getDatabase(this)
+        interactionDao = db.interactionDao()
+
         enableEdgeToEdge()
         setContent {
             ISENSmartCompanionTheme {
@@ -75,7 +82,15 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    fun saveInteraction(question: String, answer: String) {
+        val interaction = Interaction(question = question, answer = answer, date = Date())
+        lifecycleScope.launch {
+            interactionDao.insert(interaction)
+        }
+    }
 }
+
 
 @Composable
 fun MainPage(contentPadding: PaddingValues, navController: NavController) {
@@ -113,9 +128,9 @@ fun MainPage(contentPadding: PaddingValues, navController: NavController) {
                     .verticalScroll(rememberScrollState())
             ) {
                 Column {
-            inputHistory.value.forEach { input ->
-                Text(text = input, modifier = Modifier.padding(top = 16.dp))
-            }
+                    inputHistory.value.forEach { input ->
+                        Text(text = input, modifier = Modifier.padding(top = 16.dp))
+                    }
                 }
             }
             TextField(
@@ -131,8 +146,11 @@ fun MainPage(contentPadding: PaddingValues, navController: NavController) {
                             inputHistory.value += ("You : " + textFieldValue.value)
                             coroutineScope.launch {
                                 val response = AskGeminAI(textFieldValue.value)
-                                Log.i(TAG, "GeminAI response: $response")
-                                inputHistory.value += ("GeminAI : $response")
+                                inputHistory.value += ("GeminAI : " + response)
+                                (context as MainActivity).saveInteraction(
+                                    question = textFieldValue.value,
+                                    answer = response
+                                )
                                 textFieldValue.value = ""
                             }
                         }
@@ -155,6 +173,7 @@ suspend fun AskGeminAI(question: String): String {
             apiKey = BuildConfig.API_KEY
         )
         val response = generativeModel.generateContent(question)
+        Log.i(TAG, "Response: ${response.text}")
         response.text.toString()
     } catch (e: SerializationException) {
         Log.e(TAG, "Serialization error: ${e.message}", e)
@@ -273,12 +292,34 @@ fun EventsScreen() {
 
 @Composable
 fun HistoryScreen() {
+    val context = LocalContext.current
+    val interactionDao = AppDatabase.getDatabase(context).interactionDao()
+    val interactions = remember { mutableStateOf<List<Interaction>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        interactions.value = interactionDao.getAllInteractions()
+    }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "History Screen")
+        LazyColumn {
+            items(interactions.value) { interaction ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(text = "Question: ${interaction.question}")
+                        Text(text = "Answer: ${interaction.answer}")
+                        Text(text = "Date: ${interaction.date}")
+                    }
+                }
+            }
+        }
     }
 }
 
