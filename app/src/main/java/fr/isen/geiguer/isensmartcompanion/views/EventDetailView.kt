@@ -7,9 +7,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Notifications
@@ -40,57 +44,76 @@ class EventDetailView {
         val isSubscribed = remember { mutableStateOf(sharedPreferences.contains(event.title)) }
 
         Scaffold (
+            modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing).fillMaxSize(),
             topBar = {
                 TopAppBar(
-                    title = { Text("History") },
+                    title = { Text("Event detail") },
                 )
-            }
-        ){
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
+            },
+            content = { paddingValues ->
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Text(text = event.title)
-                    Text(text = event.date)
-                    Text(text = event.location)
-                    Text(text = event.category)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = event.description)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
                     ) {
-                        Button(
-                            onClick = {
-                                if (isSubscribed.value) {
-                                    sharedPreferences.edit().remove(event.title).apply()
-                                    makeText(context, "You are now unsubscribed to this event", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    sharedPreferences.edit().putBoolean(event.title, true).apply()
-                                    val notificationsService = NotificationsService()
-                                    notificationsService.scheduleNotification(context, event)
-                                    makeText(context, "You are now subscribed to this event", Toast.LENGTH_SHORT).show()
-                                }
-                                isSubscribed.value = !isSubscribed.value
-                                Log.d("sharedPreferences", sharedPreferences.all.toString())
-                            }
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
                         ) {
-                            //update the icon based on the subscription status dynamically
-                            Icon(
-                                imageVector = if (isSubscribed.value) Icons.Filled.Close else Icons.Filled.Notifications,
-                                contentDescription = "Subscribe"
-                            )
-                            Text(text = if (isSubscribed.value) "Unsubscribe" else "Subscribe")
+                            Text(text = event.title)
+                            Text(text = event.date)
+                            Text(text = event.location)
+                            Text(text = event.category)
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(text = event.description)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Button(
+                                    onClick = {
+                                        if (isSubscribed.value) {
+                                            sharedPreferences.edit().remove(event.title).apply()
+                                            makeText(
+                                                context,
+                                                "You are now unsubscribed to this event",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        } else {
+                                            sharedPreferences.edit().putBoolean(event.title, true)
+                                                .apply()
+                                            val notificationsService = NotificationsService()
+                                            notificationsService.scheduleNotification(context, event)
+                                            makeText(
+                                                context,
+                                                "You are now subscribed to this event",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                        isSubscribed.value = !isSubscribed.value
+                                        Log.d("sharedPreferences", sharedPreferences.all.toString())
+                                    }
+                                ) {
+                                    //update the icon based on the subscription status dynamically
+                                    Icon(
+                                        imageVector = if (isSubscribed.value) Icons.Filled.Close else Icons.Filled.Notifications,
+                                        contentDescription = "Subscribe"
+                                    )
+                                    Text(text = if (isSubscribed.value) "Unsubscribe" else "Subscribe")
+                                }
+                            }
                         }
                     }
                 }
             }
-        }
+        )
     }
 }
