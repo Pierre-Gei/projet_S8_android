@@ -17,6 +17,10 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.rounded.DateRange
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -61,19 +65,38 @@ class EventDetailView {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp)
+                                .padding(8.dp)
                         ) {
-                            Text(text = event.title)
-                            Text(text = event.date)
-                            Text(text = event.location)
-                            Text(text = event.category)
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(text = event.description)
+                            Column {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                                ) {
+                                    Icon(Icons.Rounded.Info, contentDescription = "Event")
+                                    Text(text = event.title)
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                                ) {
+                                    Icon(Icons.Rounded.DateRange, contentDescription = "Date")
+                                    Text(text = event.date)
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                                ) {
+                                    Icon(Icons.Rounded.LocationOn, contentDescription = "Location")
+                                    Text(text = event.location)
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                                ) {
+                                    Icon(Icons.Rounded.Menu, contentDescription = "Description")
+                                    Text(text = event.description)
+                                }
+                            }
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
