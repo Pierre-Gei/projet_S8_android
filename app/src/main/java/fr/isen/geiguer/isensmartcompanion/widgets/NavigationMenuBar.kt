@@ -15,7 +15,7 @@ import androidx.navigation.NavController
 class NavigationMenuBar {
     @Composable
     fun BottomNavBar(navController: NavController) {
-        val navItems = listOf("Home", "Events", "History")
+        val navItems = listOf("Home", "Events", "History","Agenda")
         NavigationBar {
             navItems.forEach { item ->
                 NavigationBarItem(
@@ -25,6 +25,7 @@ class NavigationMenuBar {
                                 "Home" -> Icons.Rounded.Home
                                 "Events" -> Icons.Rounded.DateRange
                                 "History" -> Icons.Rounded.Menu
+                                "Agenda" -> Icons.Rounded.DateRange
                                 else -> Icons.Rounded.Clear
                             },
                             contentDescription = item
@@ -37,6 +38,7 @@ class NavigationMenuBar {
                             "Home" -> navController.navigate("main")
                             "Events" -> navController.navigate("events")
                             "History" -> navController.navigate("history")
+                            "Agenda" -> navController.navigate("agenda")
                             else -> {}
                         }
                     },
