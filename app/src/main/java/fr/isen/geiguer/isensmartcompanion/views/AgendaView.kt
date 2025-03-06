@@ -27,7 +27,7 @@ class AgendaView {
         val userEvents = remember { mutableStateOf<List<EventModel>>(emptyList()) }
 
         LaunchedEffect(Unit) {
-            val allEvents = JsonService().getEvents(context)
+            courses.value = JsonService().getEvents(context)
             UserPreferencesService().getUserEvents(context) { events ->
                 userEvents.value = events
             }
