@@ -1,16 +1,37 @@
 [
   {
-    "title": "Event 1",
-    "description": "Description for Event 1",
-    "date": "2025-03-06",
-    "location": "Location 1",
-    "category": "Category 1"
+    "title": "REUNION Sciences Humaine Economique et Sociale",
+    "description": "Intervenants: GIACOBI Jessica, PARANT Antoine, PEROCHEAU Guillaume, PIERRE Jean-Philippe",
+    "date": "2024-09-11",
+    "location": "AMPHI",
+    "category": "Meeting"
   },
   {
-    "title": "Event 2",
-    "description": "Description for Event 2",
-    "date": "2025-03-07",
-    "location": "Location 2",
-    "category": "Category 2"
+    "title": "PROJET Projets",
+    "description": "Cours: Semestre 7 - Projet technique mi parcours. Intervenants: CHALANT Benjamin, COLLARD Dominique, DANDELOT Thomas, DEBEURME Gilles, GIACOBI Jessica, GIROD Lionel, LOUSSERT Alain, PIERRE Jean-Philippe",
+    "date": "2024-09-19",
+    "location": "317 / 411 / 510 / S02 / S04 / S07",
+    "category": "Project"
+  },
+  {
+    "title": "EXAMEN Informatique - Microservice",
+    "description": "Cours: Semestre 7 - Microservice & Déploiement Cloud. Intervenants: DANDELOT Thomas, PAILLART Frédéric, RONCAJOLO Gérald",
+    "date": "2025-01-10",
+    "location": "102 / 111",
+    "category": "Exam"
+  },
+  {
+    "title": "CONFERENCE CONFERENCE",
+    "description": "Intervenants: GADENNE Virginie, GIACOBI Jessica, LLOYD Benoit, TRUCHI Céline",
+    "date": "2025-01-29",
+    "location": "AMPHI",
+    "category": "Conference"
+  },
+  {
+    "title": "CM Informatique - Langage",
+    "description": "Cours: Semestre 8 - Développement mobile Android. Intervenants: MOLLINARI Marc",
+    "date": "2025-02-24",
+    "location": "319",
+    "category": "Course"
   }
 ]
