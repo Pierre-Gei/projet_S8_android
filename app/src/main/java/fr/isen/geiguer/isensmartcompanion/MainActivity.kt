@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import fr.isen.geiguer.isensmartcompanion.services.DatabaseService
 import fr.isen.geiguer.isensmartcompanion.services.NotificationsService
 import fr.isen.geiguer.isensmartcompanion.ui.theme.ISENSmartCompanionTheme
+import fr.isen.geiguer.isensmartcompanion.views.AgendaView
 import fr.isen.geiguer.isensmartcompanion.views.EventView
 import fr.isen.geiguer.isensmartcompanion.views.HistoryView
 import fr.isen.geiguer.isensmartcompanion.views.MainPageView
@@ -43,7 +44,9 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController, startDestination = "main") {
                         composable("main") {
                             MainPageView().MainPage(
-                                Modifier.padding(innerPadding),
+                                Modifier.padding(
+                                    innerPadding
+                                ),
                                 navController
                             )
                         }
@@ -56,6 +59,13 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("history") {
                             HistoryView().HistoryScreen(
+                                Modifier.padding(
+                                    innerPadding
+                                )
+                            )
+                        }
+                        composable("agenda") {
+                            AgendaView().AgendaScreen(
                                 Modifier.padding(
                                     innerPadding
                                 )
