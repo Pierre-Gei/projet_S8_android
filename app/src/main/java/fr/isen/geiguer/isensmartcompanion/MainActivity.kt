@@ -1,9 +1,13 @@
 package fr.isen.geiguer.isensmartcompanion
 
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -27,6 +31,7 @@ import fr.isen.geiguer.isensmartcompanion.widgets.NavigationMenuBar
 class MainActivity : ComponentActivity() {
     private lateinit var databaseService: DatabaseService
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         databaseService = DatabaseService(this, lifecycleScope)
@@ -74,6 +79,15 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+        openNotificationSettings()
+    }
+    private fun openNotificationSettings() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+            }
+            startActivity(intent)
         }
     }
 }
